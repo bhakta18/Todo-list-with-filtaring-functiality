@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo List</title>
+</head>
+
+<body>
+    <div id="root"></div>
+</body>
+<script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+<script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    const { useState } = React;
+
+    const TodoApp = () => {
+        const [todos, setTodos] = useState([]);
+        const [newTodo, setNewTodo] = useState('');
+        const [filter, setFilter] = useState('All');
+
+        const handleAddTodo = () => {
+            if (newTodo.trim()) {
+                setTodos([...todos, { text: newTodo, completed: false }]);
+                setNewTodo('');
+            }
+        };
+
+        const handleToggleTodo = (index) => {
+            const updatedTodos = todos.map((todo, i) =>
+                i === index ? { ...todo, completed: !todo.completed } : todo
+            );
+            setTodos(updatedTodos);
+        };
+
+        const handleRemoveTodo = (index) => {
+            setTodos(todos.filter((_, i) => i !== index));
+        };
+
+        const filteredTodos = todos.filter(todo => {
+            if (filter === 'All') return true;
+            if (filter === 'Active') return !todo.completed;
+            if (filter === 'Completed') return todo.completed;
+            return true;
+        });
+
+        return (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                <h2>Todo List</h2>
+                <div style={{ marginBottom: '20px' }}>
+                    <input
+                        type="text"
+                        value={newTodo}
+                        onChange={(e) => setNewTodo(e.target.value)}
+                        placeholder="Add a new task"
+                        style={{ padding: '10px', fontSize: '16px', marginRight: '10px' }}
+                    />
+                    <button onClick={handleAddTodo} style={{ padding: '10px', fontSize: '16px' }}>
+                        Add Task
+                    </button>
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                    <button onClick={() => setFilter('All')} style={{ padding: '10px', fontSize: '16px', marginRight: '5px' }}>
+                        All
+                    </button>
+                    <button onClick={() => setFilter('Active')} style={{ padding: '10px', fontSize: '16px', marginRight: '5px' }}>
+                        Active
+                    </button>
+                    <button onClick={() => setFilter('Completed')} style={{ padding: '10px', fontSize: '16px' }}>
+                        Completed
+                    </button>
+                </div>
+                <ul style={{ listStyleType: 'none', padding: 0 }}>
+                    {filteredTodos.map((todo, index) => (
+                        <li key={index} style={{ marginBottom: '10px', textAlign: 'left' }}>
+                            <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => handleToggleTodo(index)}
+                                style={{ marginRight: '10px' }}
+                            />
+                            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                                {todo.text}
+                            </span>
+                            <button
+                                onClick={() => handleRemoveTodo(index)}
+                                style={{ marginLeft: '10px', padding: '5px 10px' }}
+                            >
+                                Remove
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<TodoApp />);
+</script>
+
+</html>
